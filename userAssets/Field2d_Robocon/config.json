@@ -1,7 +1,7 @@
 {
-  "name": "2025 Robocon",
+  "name": "2025 Robocon Bigger",
   "topLeft": [0, 0],
-  "bottomRight": [1109, 547],
+  "bottomRight": [1274, 647],
   "widthInches": 622,
   "heightInches": 317,
   "defaultOrigin": "blue"
