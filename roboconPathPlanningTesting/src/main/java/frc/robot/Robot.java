@@ -5,6 +5,7 @@
 package frc.robot;
 
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,9 +18,12 @@ import com.pathplanner.lib.trajectory.PathPlannerTrajectoryState;
 import com.pathplanner.lib.util.FileVersionException;
 import com.pathplanner.lib.util.FlippingUtil;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -56,6 +60,20 @@ public class Robot extends TimedRobot {
       SmartDashboard.putData("Mirrored", mirrorField2d);
 
     } catch (FileVersionException | IOException | ParseException e) {
+      e.printStackTrace();
+    }
+
+    String path = Filesystem.getDeployDirectory().getAbsolutePath() + "\\2025-reefscape-welded-robocon.json";
+    try {
+      AprilTagFieldLayout atflRobocon = new AprilTagFieldLayout(path);//  AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);//new AprilTagFieldLayout(path);
+      for(int i = 1; i <= 22; i++){
+        System.out.println(i);
+        Field2d aprilTag = new Field2d();
+        aprilTag.setRobotPose(atflRobocon.getTagPose(i).get().toPose2d());
+        SmartDashboard.putData("Tag" + Integer.toString(i), aprilTag);
+      }
+
+    } catch (Exception e) {
       e.printStackTrace();
     }
 
