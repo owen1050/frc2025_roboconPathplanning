@@ -67,7 +67,6 @@ public class Robot extends TimedRobot {
     try {
       AprilTagFieldLayout atflRobocon = new AprilTagFieldLayout(path);//  AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);//new AprilTagFieldLayout(path);
       for(int i = 1; i <= 22; i++){
-        System.out.println(i);
         Field2d aprilTag = new Field2d();
         aprilTag.setRobotPose(atflRobocon.getTagPose(i).get().toPose2d());
         SmartDashboard.putData("Tag" + Integer.toString(i), aprilTag);
