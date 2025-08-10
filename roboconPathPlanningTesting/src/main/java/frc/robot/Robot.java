@@ -5,7 +5,6 @@
 package frc.robot;
 
 import java.io.IOException;
-import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +18,6 @@ import com.pathplanner.lib.util.FileVersionException;
 import com.pathplanner.lib.util.FlippingUtil;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -28,32 +26,32 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-/**
- * The methods in this class are called automatically corresponding to each
- * mode, as described in
- * the TimedRobot documentation. If you change the name of this class or the
- * package after creating
- * this project, you must also update the Main.java file in the project.
- */
 public class Robot extends TimedRobot {
-  /**
-   * This function is run when the robot is first started up and should be used
-   * for any
-   * initialization code.
-   */
-  public Robot() {
-    FlippingUtil.fieldSizeX = 15.8;
 
+  public Robot() {
+
+    // this line updates path planner to know the size of the field so when you call
+    // flipPath it flips along the robocon midfield rather than the default midfield
+    FlippingUtil.fieldSizeX = 15.68;
+    testFlippingPath();
+    importRoboConAprilTagLayout();
+
+  }
+
+  //this imports a path and flips it. both paths are converted to trajectories and put on SD to be viewed on advantage scope to verify the flip worked on the robocon field
+  public void testFlippingPath() {
     Field2d originaField2d = new Field2d();
     Field2d mirrorField2d = new Field2d();
 
     try {
       PathPlannerPath path = PathPlannerPath.fromPathFile("ExamplePath");
-      PathPlannerTrajectory originalTraj = path.generateTrajectory(new ChassisSpeeds(), new Pose2d().getRotation(), RobotConfig.fromGUISettings());
+      PathPlannerTrajectory originalTraj = path.generateTrajectory(new ChassisSpeeds(), new Pose2d().getRotation(),
+          RobotConfig.fromGUISettings());
       originaField2d.getObject("traj").setTrajectory(ppTrajToWPITraj(originalTraj));
 
       PathPlannerPath mirroredPath = path.flipPath();
-      PathPlannerTrajectory mirTraj = mirroredPath.generateTrajectory(new ChassisSpeeds(), new Pose2d().getRotation(), RobotConfig.fromGUISettings());
+      PathPlannerTrajectory mirTraj = mirroredPath.generateTrajectory(new ChassisSpeeds(), new Pose2d().getRotation(),
+          RobotConfig.fromGUISettings());
       mirrorField2d.getObject("traj").setTrajectory(ppTrajToWPITraj(mirTraj));
 
       SmartDashboard.putData("Original", originaField2d);
@@ -62,11 +60,15 @@ public class Robot extends TimedRobot {
     } catch (FileVersionException | IOException | ParseException e) {
       e.printStackTrace();
     }
+  }
 
+  //this imports the april tag layout for robocon and then puts all the poses of april tags on the dashboard to verify it matches new field map
+  public void importRoboConAprilTagLayout() {
     String path = Filesystem.getDeployDirectory().getAbsolutePath() + "\\2025-reefscape-welded-robocon.json";
     try {
-      AprilTagFieldLayout atflRobocon = new AprilTagFieldLayout(path);//  AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded);//new AprilTagFieldLayout(path);
-      for(int i = 1; i <= 22; i++){
+      AprilTagFieldLayout atflRobocon = new AprilTagFieldLayout(path);
+                                                                      
+      for (int i = 1; i <= 22; i++) {
         Field2d aprilTag = new Field2d();
         aprilTag.setRobotPose(atflRobocon.getTagPose(i).get().toPose2d());
         SmartDashboard.putData("Tag" + Integer.toString(i), aprilTag);
@@ -75,7 +77,6 @@ public class Robot extends TimedRobot {
     } catch (Exception e) {
       e.printStackTrace();
     }
-
   }
 
   @Override
